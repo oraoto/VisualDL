@@ -1,0 +1,62 @@
+<template>
+    <div>
+        <svg class="high-dimensional-plot"></svg>
+    </div>
+</template>
+
+<script>
+import {getHighDimensionalDatasets, getTensors} from '../service';
+import * as d3 from "d3";
+
+export default {
+    inited() {
+        getHighDimensionalDatasets().then(({errno, data}) => {
+            this.data.set('highDimensionalDatasets', data);
+
+            getTensors({ dataset: data[1].title }).then((response) => {
+                var decodedTensors = new Float32Array(response), dataset = [],
+                    marker = 0, features = data[1].shape[1];
+
+                // Reshape this data to make it ready for PCA graphing.
+                for (let i = 0; i < decodedTensors.length / features; i++){
+                    dataset.push(decodedTensors.subarray(marker, marker + features));
+                    marker += features;
+                }
+
+                this.plotDataset(dataset);
+            });
+        });
+    },
+
+    plotDataset(dataset){
+        var plot = d3.select('svg.high-dimensional-plot'),
+
+            feature1Range = d3.extent(dataset, (dp) => dp[0] ),
+            feature2Range = d3.extent(dataset, (dp) => dp[1] ),
+
+            xScale = d3.scaleLinear()
+        	  .domain([0, feature1Range[1]])
+        	  .range([0, 600]),
+
+            yScale = d3.scaleLinear()
+              .domain([0, feature2Range[1]])
+              .range([0, 600]),
+
+            xMap = (d) => xScale(d[0]),
+            yMap = (d) => xScale(d[1]),
+
+            xAxis = d3.axisBottom(xScale);
+
+        plot.attr('width', 600).attr(
+            'height', 600).style('background-color', '#fff')
+
+        // Attach the axis.
+        plot.append("g").attr("transform", "translate(0, 550)").call(xAxis);
+
+        // Attach the circles.
+        plot.selectAll('.datapoint').data(dataset).enter().append("circle").attr('cx', xMap).attr(
+            'cy', yMap).attr('r', 5).style("fill", "#008c99")
+    }
+};
+
+</script>

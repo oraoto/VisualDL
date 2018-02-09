@@ -110,3 +110,5 @@ package-lock.json
 # PyCharm IDE
 .idea/
 
+# Scratch data.
+scratch_log

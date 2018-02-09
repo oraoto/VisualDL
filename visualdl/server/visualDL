@@ -79,6 +79,14 @@ def parse_args():
         default=20,
         help="memory cache timeout duration in seconds, default 20",
     )
+    parser.add_argument(
+        "-d",
+        "--debug",
+        type=bool,
+        default=False,
+        action="store",
+        dest="debug",
+        help="run in debug mode")
     args = parser.parse_args()
     if not args.logdir:
         parser.print_help()
@@ -226,6 +234,34 @@ def graph():
     return Response(json.dumps(result), mimetype='application/json')
 
 
+@app.route('/data/plugin/high/datasets')
+def high_dimensional_datasets():
+    result = gen_result(0, "", [
+        { 'title': 'word2vec_10000_200d_tensors', 'shape': [10000, 200] },
+        { 'title': 'iris_tensors', 'shape': [150, 4] }
+    ])
+    return Response(json.dumps(result), mimetype='application/json')
+
+
+@app.route('/data/plugin/high/tensors')
+def high_dimensional_tensors():
+    dataset = request.args.get('dataset')
+    key = os.path.join('/data/plugin/high/tensors', dataset + '.bytes')
+    data = cache_get(key, try_call, lib.get_high_dimensional_tensors,
+                     log_reader, dataset)
+    return Response(data, mimetype='application/octet-stream')
+
+
+@app.route('/data/plugin/high/embeddings')
+def high_dimensional_embeddings():
+    dataset = request.args.get('dataset')
+    key = os.path.join('/data/plugin/high/embeddings', dataset + '.tsv')
+    data = cache_get(key, try_call, lib.get_high_dimensional_embeddings,
+                     log_reader, dataset)
+    result = gen_result(0, '', data)
+    return Response(json.dumps(result), mimetype='application/json')
+
+
 if __name__ == '__main__':
     logger.info(" port=" + str(args.port))
     if args.model_pb:
@@ -235,4 +271,4 @@ if __name__ == '__main__':
             os.mkdir(image_dir)
         graph_image_path = vdl_graph.draw_graph(args.model_pb, image_dir)
 
-    app.run(debug=False, host=args.host, port=args.port, threaded=True)
+    app.run(debug=args.debug, host=args.host, port=args.port, threaded=True)

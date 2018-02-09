@@ -7,6 +7,7 @@ import './scalars/index';
 import './images/index';
 import './histogram/index';
 import './graph/index';
+import './high-dimensional/index';
 
 import App from './App';
 new App({

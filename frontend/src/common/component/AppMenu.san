@@ -44,6 +44,11 @@ export default {
                     url: '/graphs',
                     title: 'GRAPHS',
                     name: 'graphs'
+                },
+                {
+                    url: '/high-dimensional',
+                    title: 'HIGH-DIMENSIONAL DATA',
+                    name: 'high-dimensional'
                 }
             ]
         };
@@ -91,4 +96,3 @@ export default {
                     color #fff
                     opacity 1
 </style>
-

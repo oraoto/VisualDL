@@ -1,8 +1,10 @@
+import os
 import re
 import sys
 import time
 import urllib
 from tempfile import NamedTemporaryFile
+import csv
 
 import numpy as np
 from PIL import Image
@@ -195,6 +197,22 @@ def get_histogram(storage, mode, tag, num_samples=100):
             data_idx = int(span_offset * span)
         sampled_data.append(res[0])
         return sampled_data[::-1]
+
+
+def get_high_dimensional_tensors(storage, dataset):
+    return open(os.path.dirname(os.path.realpath(
+        __file__)) + '/' + dataset + '.bytes', 'rb').read()
+
+
+def get_high_dimensional_embeddings(storage, dataset):
+    serialized_embeddings = []
+    with open(os.path.dirname(os.path.realpath(__file__)) + '/' + dataset + '.tsv', 'r') as tsv_file:
+        embeddings_reader = csv.reader(tsv_file, delimiter='\t')
+
+        for embedding in embeddings_reader:
+            serialized_embeddings.append(embedding)
+
+    return serialized_embeddings
 
 
 def retry(ntimes, function, time2sleep, *args, **kwargs):

@@ -15,3 +15,9 @@ export const getPluginHistogramsTags = makeService('/data/plugin/histograms/tags
 export const getPluginHistogramsHistograms = makeService('/data/plugin/histograms/histograms');
 
 export const getPluginGraphsGraph = makeService('/data/plugin/graphs/graph');
+
+export const getHighDimensionalDatasets = makeService('/data/plugin/high/datasets');
+
+export const getTensors = makeService('/data/plugin/high/tensors', {
+    responseType: 'arraybuffer', method: 'get'
+});

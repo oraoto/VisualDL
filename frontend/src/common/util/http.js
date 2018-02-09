@@ -44,7 +44,14 @@ instance.interceptors.response.use(responseErrorStatus, responseNetError);
 
 export const makeService = (url, opt = {method: 'get'}) => (params = {}) => {
     if (opt.method === 'delete' || opt.method === 'get') {
+        // If method is the only real option.
         params = {params};
+
+        let param = null;
+        for (param in opt){
+            if (param !== 'method')
+                params[param] = opt[param];
+        }
     }
     return instance[opt.method](url, params);
 };
